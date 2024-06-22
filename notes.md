@@ -385,7 +385,262 @@ systemctl enable --now cri-docker.socket
 
 ![alt text](shots/11.PNG)
 
-#### 
+#### RS - Activity2 : Create five Pods with  jenkins and alpine in one Pod
+
+* For the manifest
+
+    [ Refer Here : https://github.com/asquarezone/KubernetesZone/commit/d964fd4084e930a3103e5cc2cf3ecb1978763459 ]
+
+* Apply the manifest
+
+
+
+
+* Get events from describe rs
+
+
+
+* Now delete a pod manually
+
+
+
+### Labels
+
+* For official doc's
+
+    [ Refer Here : https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/ ]
+
+* Labels are key value pairs that can be attached as metadata to  k8s objects
+* Labels help in selecting/querying/filtering objects
+* Labels can be selected using
+    + equality based 
+    
+    [ Refer Here : https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#equality-based-requirement ]
+
+    + set based 
+    
+    [ Refer Here : https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#set-based-requirement ]
+
+#### Label - Activity 1 : Create a  nginx pod with label
+
+* Let's create a  nginx pod with label `app: nginx`
+* For the pod spec with labels
+
+    [ Refer Here : https://github.com/asquarezone/KubernetesZone/commit/033ced70c7020ca9f843439dd42c9b4243fcb335 ]
+
+* Let's run some other pods using declartative
+
+
+
+
+* Selectors
+
+
+
+
+* Create 5 pods with label app=jenkins
+
+
+
+* Now run the replicaset with 5 replicas
+```
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: jenkins-rs
+spec:
+  minReadySeconds: 5
+  replicas: 5
+  selector:
+    matchLabels:
+      app: jenkins
+  template:
+    metadata:
+      name: jenkins
+      labels:
+        app: jenkins
+    spec:
+      containers:
+        - name: jenkins
+          image: jenkins/jenkins:lts-jdk11
+          ports:
+            - containerPort: 8080
+        - name: alpine
+          image: alpine:3
+          args:
+            - sleep
+            - 1d
+```
+*  Jenkins rs didnt create any pod as there were 5 pods matching label selector. we had deleted one pod which lead to creation of  jenkins pod from the template section in above manifest
+
+
+
+* Replication Controller only allows equality based selectors where as Replica Set supports set based selectors also
+* Sample
+```
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: setbased
+  labels:
+    purpose: understanding
+    concept: setbased
+spec:
+  minReadySeconds: 2
+  replicas: 3
+  selector:
+    matchExpressions:
+      - key: app
+        operator: In
+        values:
+          - nginx
+          - web
+      - key: env
+        operator: NotIn
+        values:
+          - prod
+          - uat
+      - key: failing
+        operator: DoesNotExist
+        values:
+  template:
+    metadata:
+      name: nginx
+      labels:
+        app: nginx
+        env: dev
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.23
+          ports:
+            - containerPort: 80
+```
+#### Exercise
+
+* Write a manifest to create
+    + nginx replication controller with 3 pods
+
+#### Next Steps
+
+* Service
+* InitContainers
+* Health Probes
+* Managed  K8s
+
+### Kubernetes as a Service ( Managed K8s )
+
+* Every Cloud provider offers `k8s as a service`
+    + Azure = AKS
+    + AWS = EKS
+    + GCP = GKE
+* K8s as a service basically means the master nodes will be managed by cloud provider
+
+    + Typical k8s cluster
+
+    ![alt text](shots/12.PNG)
+
+    + K8s as a Service
+
+    ![alt text](shots/13.PNG)
+
+* Advantages :
+
+ 1. less administration
+ 2. nodes can be scaled
+ 3. inbuilt support for cloud integrations
+* In this course we will be using
+ 1. AKS
+ 2. EKS
+
+#### Setting up basic k8s cluster in Azure (AKS)
+
+* In this setups we configure kubectl on
+    + dev systems
+    + build servers
+
+    ![alt text](shots/14.PNG)
+
+* Install kubectl or we can use azure cli to set it up
+
+    [ Refer Here : https://kubernetes.io/docs/tasks/tools/ ]
+
+* Install azure cli: 
+
+    [ Refer Here : https://learn.microsoft.com/en-us/cli/azure/install-azure-cli ]
+
+* Execute `az login`
+* For azure aks
+
+    [ Refer here : https://learn.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-cli ]
+
+* Create a resource group and continue according to doc's 
+
+    [ Refer Here : https://learn.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-cli#create-a-resource-group ]
+
+#### Exposing Applications running in cluster to externally as well as internally when scaled
+
+* Every pod gets a unique ip and name
+* Connecting from one pod to other on the basis of name/ip might not be a good idea as pods are controlled by replicasets or other controllers
+* K8s has a service which helps us in connecting to pods with similar behaviour but by using labels
+* Each service gets a ip address and this is virtual ip which helps in forwarding traffic to one of the pod based on labels. This ip is called as cluster ip
+* Services can be exposed to external world
+
+![alt text](shots/o.PNG)
+
+* Service is similar to layer 4 load balancer
+* For official doc's
+
+    [  Refer Here : https://kubernetes.io/docs/concepts/services-networking/service/ ]
+
+#### Internal Communication using k8s service
+
+* Consider the following :
+    + We have an alpine pod which needs to consume nginx
+    + but nginx is a replica set and there can be n replicas
+* Let's create a nginx-rs
+
+
+
+* Create an alpine pod and login into that
+
+
+
+* ping nginx-svc by its ip address and try accessing the web page using curl
+
+
+
+* access nginx-svc by using name
+
+
+
+* now do nslookup based on name
+
+
+
+* Look into environment variables in alpine pod (Alpine was created post nginx service creation)
+
+
+* Look into environment variables in nginx pods (These were created prior to nginx service)
+
+
+
+
+* For internal communication manifests
+
+    [ Refer Here : https://github.com/asquarezone/KubernetesZone/commit/6b48735bf6627279d4339217f56ca04cff92b76d ]
+
+#### External Communication using k8s service
+
+* Some user external to  k8s cluster wants to access nginx
+
+![alt text](shots/p.PNG)
+
+* 
+
+
 
 
 
