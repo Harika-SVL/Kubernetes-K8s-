@@ -638,7 +638,101 @@ spec:
 
 ![alt text](shots/p.PNG)
 
-* 
+* Kubernetes has the service publishing types 
+
+    [ Refer Here : https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types ]
+
+    + _**Cluster ip**_ : internal communication
+    + _**Node Port**_ :  k8s will expose the  application on a port on every node in k8s cluster
+
+    ![alt text](shots/q.PNG)
+
+    + _**LoadBalancer**_ : This is generally used with managed k8s clusters
+
+    ![alt text](shots/r.PNG)
+
+    + _**ExternalName**_ : Creates a CNAME record that can be used in your DNS  Servers
+* We have created a manifest with loadBalancer
+
+
+
+* For the spec
+
+    [ Refer here : https://github.com/asquarezone/KubernetesZone/commit/aec7b6a9e647177b76c453fa739da7be5205ead2 ]
+
+### K8s Service
+
+* When upgrading to newer versions of Pods ensure right set of labels are present on  k8s service selector
+
+
+
+### Health Checks/Probes for containers in k8s Pods
+
+* For official doc's
+
+    [ Refer Here : https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/ ]
+* K8s supports 3 kinds of checks
+    + _**Liveness probe**_ : if this check fails kuberenetes will restart the container
+    + _**Readiness probe**_ : if this check fails the pod will be removed from service (pod will not get requests from service)
+    + _**Startup probe**_ : This checks for startup and until startup is ok, the other checks will be paused
+* Probes or checks can be performed by
+    + _**exec**_ : run any linux/windows command which returns status/exit code
+    * _**http**_ : we send http request to the application. based on status codes we can decide
+
+    [ Refer Here : https://developer.mozilla.org/en-US/docs/Web/HTTP/Status ]
+
+    + _**grpc**_ : This communicates over grpc
+    + _**tcp**_ : send tcp request
+* For the manifests with health checks
+
+    [ Refer Here : https://github.com/asquarezone/KubernetesZone/commit/cac117360161d61012649baf1401ec6ae87d9cbb ]
+
+### Run Pods with specific Resources (CPU/Memory)
+
+* For the official docs on Resource Limits
+
+    [ Refer Here : https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ ]
+
+* For the manifests with requests and limits
+
+    [ Refer Here : https://github.com/asquarezone/KubernetesZone/commit/910a088cab6e157f79468910494515d8141c220c ]
+
+
+
+### Container Types in Pods
+
+* We have three types of containers :
+
+    + _**containers**_ : these are why we write pod spec
+    + _**init containers**_ :
+
+    [ Refer here : https://kubernetes.io/docs/concepts/workloads/pods/init-containers/ ] 
+    
+    + _**ephemeral containers**_
+
+### Init Containers
+
+* For the manifests added
+
+    [ Refer here : https://github.com/asquarezone/KubernetesZone/commit/41e66c454ef62cc5f9c50e72a0c8fa672ee2a727 ]
+
+
+
+### Ephemeral Containers
+
+* For official doc's
+
+    [ Refer Here : https://kubernetes.io/docs/concepts/workloads/pods/ephemeral-containers/ ]
+
+#### Node Usecases
+
+* How to schedule a Pod on a Particular node
+* How to stop assigning more pods to a node
+* How to move all the pods running a node to other node
+
+
+
+
 
 
 
