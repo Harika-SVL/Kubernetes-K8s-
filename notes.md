@@ -1175,6 +1175,35 @@ label author=khaja
 
 
 
+* Traditional approach: 
+
+    [ Refer Here : https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ ]
+
+### RBAC
+
+* Authorization in K8s 
+
+    [ Refer Here : https://kubernetes.io/docs/reference/access-authn-authz/rbac/ ]
+
+    ![alt text](shots/w.PNG)
+
+* Authentication in k8s 
+
+    [ Refer Here : https://kubernetes.io/docs/reference/access-authn-authz/authentication/ ]
+
+    ![alt text](shots/x.PNG)
+
+* Attaching Authorization to identity using Bindings
+    + RoleBinding
+    + ClusterRoleBinding
+* For creating users and setting permissions
+
+    [ Refer Here : https://www.adaltas.com/en/2019/08/07/users-rbac-kubernetes/ ]
+
+
+
+
+
 
 
 
