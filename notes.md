@@ -1087,7 +1087,115 @@ spec:
 
 ### Config Map
 
-* 
+* For official doc's
+
+    [ Refer Here : https://kubernetes.io/docs/concepts/configuration/configmap/ ]
+
+* Let's create a dummy config map. For the changes
+
+    [ Refer Here : https://github.com/asquarezone/KubernetesZone/commit/151e05b84155fa9667714f624c5148b98d30fe6d ]
+
+* Create the config map
+
+
+
+* Let's configure a pod to use this config map 
+
+    [ Refer Here : https://kubernetes.io/docs/concepts/configuration/configmap/#configmaps-and-pods ]
+
+* There are four different ways that you can use a ConfigMap to configure a container inside a Pod:
+    + Inside a container command and args
+    + Environment variables for a container
+    + Add a file in read-only volume, for the application to read
+    + Write code to run inside the Pod that uses the Kubernetes API to read a ConfigMap
+* Load config map data as Environment variables. Refer Here for pod spec which loads the config map as environmental variables
+
+
+
+* Experiments:
+    + change the config map `add one more key and`
+        * cross check with existing pod for new values. Environmental variables are not updated
+
+
+
+
+* _**Activity**_ : Create a mysql config map with values for username, password and root password. Use that in mysql-pod/rs/statefulset. For the changes
+
+    [ Refer Here : https://github.com/asquarezone/KubernetesZone/commit/baf1af99ad0ac74d0dc1673220e8a43827accbfc ]
+
+
+
+* For using config maps as files from pod
+
+    [ Refer here : https://kubernetes.io/docs/concepts/configuration/configmap/#using-configmaps-as-files-from-a-pod ]
+
+
+
+
+* To deal with confidential data k8s has secrets
+
+### Secrets
+
+* For k8s secrets
+
+    [ Refer Here : https://kubernetes.io/docs/concepts/configuration/secret/ ]
+
+* Secrets can be created from kubectl 
+
+    [ Refer Here : https://kubernetes.io/docs/tasks/configmap-secret/managing-secret-using-kubectl/#use-raw-data ]
+    
+* For manifest files 
+
+    [ Refer Here : https://kubernetes.io/docs/tasks/configmap-secret/managing-secret-using-config-file/#edit-secret ]
+
+* Create a secret and describe secret
+
+
+
+* use the secret in Pod as environment variable
+
+
+
+* For the changes done to use secrets
+
+    [ Refer here : https://github.com/asquarezone/KubernetesZone/commit/7024d7cb7b3d99e92c8f03a35d6093c8c5b9c0c7 ]
+
+#### Exercise
+
+* Create a private registry (acr or ecr)
+* Google to findout how to configure all nodes in k8s cluster to use your private registry
+    + Create a secret based on registry credentials
+    + container image details in manifest will have extra field about the above created secret
+* Create a `Dockerfile`
+```
+FROM alpine
+label author=khaja
+```
+* We have create a replica set with image from private registry. Pod status is pending as image is not found
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
