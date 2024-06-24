@@ -730,8 +730,49 @@ spec:
 * How to stop assigning more pods to a node
 * How to move all the pods running a node to other node
 
+### Deployment
+
+* Deployment is a k8s object which can help in rolling out and rolling back updates
+* Deployment controls replica set and replica set controls pods
+
+![alt text](shots/s.PNG)
+
+* Let's create a manifest with some application deployment
+* Apply deployment and service, access the application
 
 
+
+
+* Let's get deployment information
+
+
+
+
+* let's explore rollout command
+
+
+
+* For the manifests used to create revision 1
+
+    [ Refer here : https://github.com/asquarezone/KubernetesZone/commit/065f0712a0e144133132d1d5d99797a5c8677a84 ]
+
+* Let's update the specs to change image from nginx to httpd, for changes in manifests
+
+    [  Refer Here : https://github.com/asquarezone/KubernetesZone/commit/6c5593ec2cd026807295531feeae12d528f97e38 ]
+
+
+
+
+
+* Now to rollback to previous versions and update multiple versions `kubectl rollout undo`
+
+
+
+* The change-cause is showning as none which is not good. What can be done to have a valid change cause
+
+### Annotations
+
+* 
 
 
 
