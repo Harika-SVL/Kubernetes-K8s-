@@ -772,7 +772,324 @@ spec:
 
 ### Annotations
 
+* For official doc's
+
+    [ Refer here : https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/ ]
+
+* For the manifest with change cause annotation
+
+    [ Refer here : https://github.com/asquarezone/KubernetesZone/commit/aab094bbdedded0817daf51021f7d20034ea7f74 ]
+    
+    
+    
+* For some annotations specific to azure aks ingress 
+
+    [ Refer here : https://azure.github.io/application-gateway-kubernetes-ingress/annotations/ ]
+
+* For some annotations specific to aws eks ingress
+
+    [ Refer here : https://github.com/kubernetes-sigs/aws-load-balancer-controller/blob/main/docs/guide/ingress/annotations.md ]
+
+### DaemonSet
+
+* DaemonSet is a controller which creates pod on every/selected nodes in k8s cluster
+* Use cases:
+    + log collectors
+    + agents etc
+* For official doc's
+
+    [ Refer here : https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/ ]
+
+* For the manifests for daemonsets
+
+    [ Refer Here : https://github.com/asquarezone/KubernetesZone/commit/29a1b53166e7bf47195268b0000faad3fb4cdd1b ] 
+
+### Scheduling Pods
+
+* possible ways
+
+![alt text](shots/t.PNG)
+
+* For assigning pods to nodes
+
+    [ Refer here : https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/ ]
+
+### Node Selectors
+
+* We have added manifests with pod and service. For manifests
+
+    [ Refer Here : https://github.com/asquarezone/KubernetesZone/commit/29a1b53166e7bf47195268b0000faad3fb4cdd1b ]
+
+* Now let's select node by its name 
+
+    [ Refer Here : https://github.com/asquarezone/KubernetesZone/commit/c295326909f3b2e31605f47a14c8f2d6d6d25c85 ]
+
+
+
+* We have two nodes lets attach the following labels
+    + node 0 : `purpose: poc`
+    + node 1 : `purpose: testing`
+
+* When we have tried to create a pod with nodeSelector matching purpose: poc it was created on node 0 and when we created a pod with purpose: testing it created in node 1 and when created a pod with purpose: development it was in pending state (not created)
+```
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nodeselector
+  labels:
+    app: nginx
+    purpose: nodeselector
+spec:
+  nodeSelector:
+    purpose: testing
+  containers:
+    - name: jenkins
+      image: jenkins/jenkins:jdk11
+      ports:
+        - containerPort: 8080
+```
+
+
+### Affinity/Anti Affinity Based
+* For official doc's
+
+    [ Refer Here : https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes-using-node-affinity/ ]
+
+### Taints and Tolerations
+
+* For official doc's
+
+    [ Refer Here : https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/ ]
+
+### Headless Service
+
+* For doc's
+
+   [ Refer Here : https://kubernetes.io/docs/concepts/services-networking/service/#headless-services ]
+
+* Headless service will not have cluster ip
+
+
+
+* headless service spec
+```
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-svc
+spec:
+  selector:
+    app: nginx
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - name: nginx-svc
+      port: 80
+      targetPort: 80
+      protocol: TCP
+```
+* Headless service returns the ips of the pods returned by selector.
+* This is used in stateful sets
+
+### Storage Solutions in K8s
+
+* Stateful applications store data locally. In Containers the data created locally will be lost once you delete it. So to solve this in docker we have used volumes. Volumes have a lifecycle which has no relation to container lifecycle (refer docker containers, image layers, volumes)
+* IN k8s we are running docker containers, k8s is an orchestration solutions.
+* Let's see what are options for storage provisioning in k8s 
+
+    [ Refer Here : https://kubernetes.io/docs/concepts/storage/ ]
+
+* The most widely used storage types
+    + Volumes
+    + Persistent Volumes
+        * Storage Classes
+        * Persistent Volume Claims
+* Volumes 
+
+    [ Refer Here : https://kubernetes.io/docs/concepts/storage/volumes/ ]
+
+### Volumes
+
+* Volumes can be mounted to containers and they have lifetime equivalent to Pods.
+* The types of Volumes 
+
+    [ Refer Here : https://kubernetes.io/docs/concepts/storage/volumes/#volume-types ]
+
+* The types
+    + storage on  cloud
+        * ebs
+        * azure disk
+        * efs
+        *azure file
+        *gcs
+    + empty dir
+    + hostPath
+* Lets create a manifest with mysql-pod with volume
+```
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mysql-vol
+  labels:
+    app: mysql
+    layer: db
+spec:
+  containers:
+    - name: mysql
+      image: mysql:8
+      ports:
+        - containerPort: 3306
+      volumeMounts:
+        - name: test-volume
+          mountPath: /var/lib/mysql
+  volumes:
+    - name: test-volume
+      emptyDir:
+        sizeLimit: 100Mi
+```
+### Persistent Volumes
+
+* These volumes will have a lifetime different than Pod i.e. they exist even after pod is dead.
+* Types of PVC 
+
+    [ Refer Here : https://kubernetes.io/docs/concepts/storage/persistent-volumes/#expanding-persistent-volumes-claims ]
+
+* Persistent Volumes in Azure 
+    [ Refer Here : https://learn.microsoft.com/en-us/azure/aks/concepts-storage ]
+
+* Storage classes in Azure 
+    [ Refer Here : https://learn.microsoft.com/en-us/azure/aks/concepts-storage#storage-classes ]
+
+* Storage classes in AWS 
+
+    [ Refer Here : https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html ]
+
+
+#### Let's create a mysql-pod with dynamic volume provisioing
+
+* Get storage classes
+
+
+
+* Let's create a Persistent Volume Claim and a mysql pod claiming pvc
+
+
+
+* For the initial manifests written by us
+
+    [ Refer here : https://github.com/asquarezone/KubernetesZone/commit/c48ea958b6d8fc4a9dab0637a92e105a9dc61b56 ]
+
+* Now let's modify the spec to add mysql related environment variables
+
+
+
+* For the mysql env values
+
+    [ Refer Here : https://github.com/asquarezone/KubernetesZone/commit/d6afa41b79ff3e552549018459f380eb7f8135f7 ]
+
+* Insert some data into mysql
+* now delete pod and recreate and check for the data created
+
+
+
+* For static provisioning of volume 
+
+    [ Refer Here : https://learn.microsoft.com/en-us/azure/aks/azure-csi-disk-storage-provision#statically-provision-a-volume ]
+
+* If you want to scale Pods we can use
+    + Replica Sets
+    + Deployments
+
+    ![alt text](shots/u.PNG)
+
+### StatefulSets
+
+* Statefulset is like deployment with replicas. But each pod gets its own volume
+* Stateful Set is for stateful applications
+
+![alt text](shots/v.PNG)
+
+* When we create replicas in Stateful Set we get predictable names
+* For official doc's
+
+    [ Refer Here : https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/ ]
+
+* We can access individual pod, by creating headless service and by using ...svc.cluster.local
+* Let's experiment with stateful sets and create nginx pods
+* For the manifests
+
+    [ Refer Here : https://github.com/asquarezone/KubernetesZone/commit/255c9c7303ac2d66f22c79367ade1f6bcc7af877 ]
+
+
+
+* Naming is predictable in stateful sets
+
+
+
+* Now create a different html page for every pod
+
+
+
+* Send a curl request from any alpine pod `<pod-name>.<headless.svc-name>.<namespace>.svc.cluster.local`
+
+
+
+
+### Kuberentes namespace
+
+* For official doc's
+
+    [ Refer Here : https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/ ]
+
+#### Agenda
+
+* Day 1: (6th May)
+    + Namespace
+    + Config Maps and Secrets
+    + RBAC
+    + Scenarios
+
+* Day 2: (7th May)
+    + Ingress
+    + AKS
+    + EKS
+    + Scenarios
+
+* Day 3: (13th May)
+    + Kustomize
+ * GitOps
+    + Create k8s cluster from terraform
+    + when code committed
+        * build image
+        * push to registry
+        * deploy into k8s cluster
+        * Security Scans:
+            + Images
+            + K8s
+    + From Github Actions
+
+### Namespace
+
+* Namespace is logical/virtual cluster within k8s cluster
+* K8s resources will be of two categories by scope
+    + Namespace resources: They belong to a namespace
+
+
+
+    + _**Cluster resources**_ : They belong to a cluster
+
+
+
+* _**Creating namespace**_ : `kubctl create ns <name>` 
+
+### Config Map
+
 * 
+
+
 
 
 
