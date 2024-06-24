@@ -1200,7 +1200,25 @@ label author=khaja
 
     [ Refer Here : https://www.adaltas.com/en/2019/08/07/users-rbac-kubernetes/ ]
 
+#### Topics
 
+    + AKS
+    + EKS
+    + Helm/Kustomize
+    + ingress
+    + hpa
+
+### Managed K8s
+
+* Managed K8s cluster will manage master nodes i.e. we don’t have explicit access to master nodes
+* so cluster administrational activities such as
+backing up k8s cluster
+upgrading k8s cluster
+cloud controller manager configurations to
+have access to native cloud networks
+have csi implementations specific to cloud provider
+have cni implemenations specific to cloud provider
+Cloud providers charge hourly for cluster and they give sla’s
 
 
 
