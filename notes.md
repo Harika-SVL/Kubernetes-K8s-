@@ -1212,13 +1212,197 @@ label author=khaja
 
 * Managed K8s cluster will manage master nodes i.e. we don’t have explicit access to master nodes
 * so cluster administrational activities such as
-backing up k8s cluster
-upgrading k8s cluster
-cloud controller manager configurations to
-have access to native cloud networks
-have csi implementations specific to cloud provider
-have cni implemenations specific to cloud provider
-Cloud providers charge hourly for cluster and they give sla’s
+    + backing up k8s cluster
+    + upgrading k8s cluster
+    + cloud controller manager configurations to
+        * have access to native cloud networks
+        * have csi implementations specific to cloud provider
+        * have cni implemenations specific to cloud provider
+* Cloud providers charge hourly for cluster and they give sla’s
+
+#### AKS cluster creation and features
+
+* AKS: 
+
+    [ Refer Here : https://azure.microsoft.com/en-in/products/kubernetes-service#:~:text=What%20is%20AKS%3F,like%20health%20monitoring%20and%20maintenance. ]
+
+* For official doc's
+
+    [ Refer here : https://learn.microsoft.com/en-us/azure/aks/what-is-aks ]
+
+* Addons 
+
+    [ Refer Here : https://learn.microsoft.com/en-us/azure/aks/integrations#available-add-ons ]
+
+* Extensions: 
+
+    [ Refer Here : https://learn.microsoft.com/en-us/azure/aks/cluster-extensions?tabs=azure-cli#currently-available-extensions ]
+
+* To create aks cluster
+
+    [ Refer Here : https://learn.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-cli ]
+
+### EKS Cluster
+
+* Elastic kubernetes Services is a managed k8s from aws
+* EKS cluster can be created in many ways
+    + aws console
+    + aws cli
+    + terraform
+    + eksctl `this will be used`
+* Features 
+
+    [ Refer Here : https://aws.amazon.com/eks/features/ ]
+
+* Create a linux instance, install aws cli, create iam credentials
+* install kubectl 
+
+    [ Refer Here : https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/#install-using-other-package-management ]
+
+* we had followed direct installation 
+
+    [ Refer Here : https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/#install-kubectl-binary-with-curl-on-linux ]
+
+* Install eksctl 
+
+    [ Refer Here : https://eksctl.io/introduction/#for-unix ]
+
+```
+# for ARM systems, set ARCH to: `arm64`, `armv6` or `armv7`
+ARCH=amd64
+PLATFORM=$(uname -s)_$ARCH
+
+curl -sLO "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$PLATFORM.tar.gz"
+
+# (Optional) Verify checksum
+curl -sL "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_checksums.txt" | grep $PLATFORM | sha256sum --check
+
+tar -xzf eksctl_$PLATFORM.tar.gz -C /tmp && rm eksctl_$PLATFORM.tar.gz
+
+sudo mv /tmp/eksctl /usr/local/bin
+```
+* Create a file called as `cluster.yaml` with the following content
+```
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: basic-cluster
+  region: us-west-2
+
+nodeGroups:
+  - name: basic
+    instanceType: t2.large
+    desiredCapacity: 2
+    volumeSize: 20
+    ssh:
+      allow: true # will use ~/.ssh/id_rsa.pub as the default ssh key
+```
+* Execute ssh-keygen `ssh-keygen`
+* Now execute the command `eksctl create cluster -f cluster.yaml`
+* After creation execute
+```
+kubectl get nodes
+kubectl get pods --all-namespaces
+```
+
+
+### Helm
+
+* Helm is a package manager for k8s
+* In helm we have repositories where charts are defined
+* An helm chart is analogus to package (apt package)
+* install helm 
+
+    [ Refer Here : https://helm.sh/docs/intro/install/ ]
+
+* Manifests are static in nature, to add reusability and dynamic nature to manifests we have two options
+    + helm:
+        * this uses templated approach
+        * this was present from earlier days of k8s
+    + kustomize:
+        * this uses override approach
+        * this is natively supported in kubectl (recent additions)
+*  For the basic chart created
+
+    [ Refer here : https://github.com/asquarezone/KubernetesZone/commit/f493dd2c0b12a18d250698e348447792e0b79bdb ]
+
+
+
+### Kustomize
+
+* Kustomize is a tool where we can natively manage configurations
+* For kustomize
+
+    [ Refer Here : https://kustomize.io/ ]
+
+* Natively manage dynamic configurations to k8s manifests
+* Let's write a k8s manifest
+    + to deploy `shaikkhajaibrahim/dashboardservice:1.0.0` which runs on 80 port
+    + create a service file exposed as LoadBalancer
+
+* For manifests
+
+    [ Refer Here : https://github.com/asquarezone/KubernetesZone/commit/866afac25f2867fc53669794d4a76b4a8546f2e0 ]
+
+* For tutorial from vultr to use kustomize
+
+    [ Refer Here : https://docs.vultr.com/how-to-configure-kubernetes-resources-with-kustomize ]
+
+* For the manifest folder structure
+
+    [ Refer Here : https://github.com/asquarezone/KubernetesZone/commit/e731bf4f070e9675dfe26aa2fe4ee87df22f33ea ]
+
+* Now let's add name prefix per environment
+* For nameprefix docs
+
+    [ Refer Here : https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/nameprefix/ ]
+
+* For the changes done
+
+    [ Refer Here : https://github.com/asquarezone/KubernetesZone/commit/45fe363ca28c39fd738c9a15f27d1282fbe544c4 ]
+
+
+
+* For labels per env
+
+    [ Refer Here : https://github.com/asquarezone/KubernetesZone/commit/734b945733ea08d652012bc599acd4736de35720 ]
+
+* For kustomize examples
+
+    [ Refer Here : https://github.com/kubernetes-sigs/kustomize/tree/master/examples ]
+
+#### Problem – 1
+
+* Creating a Load Balancer for every service shoots up cloud costs
+* I would like to perform
+    + path based routing
+    + hostname based routing
+* _**Solution**_ :
+    + Ingress which provides external access to k8s services
+
+#### Questions
+
+1. How to check logs of pods
+2. What are events in k8s
+3. why should i use k8s
+4. What are stateful sets?
+5. What is purpose of headless service?
+6. What is CSI ?
+7. What is CNI ?
+8. What is the last problem which you faced in k8s ?
+9. How to use external vault in k8s
+10. How to backup k8s cluster?
+11. How to upgrade the k8s cluster?
+12. what is draining the node vs cordon the node?
+13. Can we implement custom dns in k8s?
+14. What is default dns in k8s?
+15. communication between two services in different namespaces
+16. How to auto scale nodes in aks/eks? `cluster node autoscaler`
+17. List down atleast 10 most common k8s failures?
+
+
+
 
 
 
