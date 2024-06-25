@@ -1401,6 +1401,89 @@ kubectl get pods --all-namespaces
 16. How to auto scale nodes in aks/eks? `cluster node autoscaler`
 17. List down atleast 10 most common k8s failures?
 
+### Ingress
+
+* To understand concept of ingress 
+
+    [ Refer Here : https://doc.traefik.io/traefik/getting-started/concepts/ ]
+
+* In k8s we have three major objects which will help in ingress (layer 7 loadbalancing)
+    + Ingress
+    + _**IngressController**_ : This is a third party implementation 
+    
+    [ Refer Here : https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/ ]
+
+    + IngressClass
+
+* K8s doesnot have controller for ingress.
+* Let's create four simple applicatons, for changes done
+
+    [ Refer Here : https://github.com/asquarezone/DockerZone/commit/4c6d947f089ae8cd9581c426a16afe22155e7e7f ]
+
+* Create docker image and push them to registry
+* For this classroom purpose i will be using nginx-ingress-controller 
+
+    [ Refer Here : https://www.f5.com/products/nginx/nginx-ingress-controller ]
+
+* Our implementation:
+
+![alt text](shots/y.PNG)
+
+* let's install nginx-ingress controller using helm
+```
+helm repo add nginx-stable https://helm.nginx.com/stable
+helm repo update
+helm upgrade --install ingress-nginx ingress-nginx \
+             --repo https://kubernetes.github.io/ingress-nginx \
+             --namespace ingress-nginx --create-namespace
+```
+
+
+* After last command we see output which better copy to some notepad
+* Now execute the following command to watch for external ip to nginx ingress controller `kubectl --namespace ingress-nginx get services -o wide -w ingress-nginx-controller`
+
+
+
+* Get ingress classes and there should be nginx ingress class from helm chart
+
+
+
+* let's deploy application and services. For the changes
+
+    [ Refer Here : https://github.com/asquarezone/DockerZone/commit/f7d7835ff711499523d049c6ae87f4f2a29b2f26 ]
+
+
+
+
+* For the manifest file for ingress
+
+    [ Refer Here : https://github.com/asquarezone/DockerZone/commit/37705b10210b89f144fcefd0315f9ac91eaa84f4 ]
+
+* Now create ingress object
+
+
+
+* Get external ip of ingress controller using `kubectl --namespace ingress-nginx get services -o wide -w ingress-nginx-controller`
+
+
+
+
+* For official docs of ingress
+
+    [ Refer Here : https://kubernetes.io/docs/concepts/services-networking/ingress/ ]
+
+### Node autoscaler
+
+* For aks cluster autoscaler
+
+    [ Refer Here : https://learn.microsoft.com/en-us/azure/aks/cluster-autoscaler?tabs=azure-cli ]
+
+* For eks cluster autoscaler
+
+    [ Refer Here : https://docs.aws.amazon.com/eks/latest/userguide/autoscaling.html ]
+
+
+
 
 
 
